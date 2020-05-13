@@ -36,6 +36,18 @@ namespace WebApi.Controllers
             return new JsonResult(entity);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateCompany(CompanyDto dto)
+        {
+            var entity = _context.Posts.First(q => q.PostId == dto.PostId);
+
+            entity.Companies = dto.Companies;
+
+            var result = await _context.SaveChangesAsync();
+
+            return new JsonResult(entity);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetByVisitor(int visitorId)
         {
@@ -50,6 +62,25 @@ namespace WebApi.Controllers
 
             return new JsonResult(result);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _context.Posts
+                .ToListAsync();
+
+            return new JsonResult(result);
+        }
+
+         [HttpGet]
+        public async Task<IActionResult> GetByCompany(string title)
+        {
+            var result = await _context.Posts
+                .Where(q => q.Companies.Title.Contains(title))
+                .ToListAsync();
+
+            return new JsonResult(result);
+        }
     }
 
     public class PostDto
@@ -59,5 +90,12 @@ namespace WebApi.Controllers
         public int[] Visitors {get;set;}
 
         public int BlogId { get; set; }
+    }
+
+    public class CompanyDto
+    {
+        public int PostId { get; set; }
+        public Company Companies {get;set;}
+
     }
 }
